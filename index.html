@@ -421,7 +421,6 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         </div>
       </div>
     </div>
-    <!-- USEFUL DOCS -->
     <div class="docs-sec">
       <div class="docs-in">
         <div class="sec-tag" id="docsTag">USEFUL DOCS</div>
@@ -432,7 +431,6 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         </div>
       </div>
     </div>
-    <!-- DASHBOARDS -->
     <div class="dash-sec">
       <div class="dash-in">
         <div class="sec-tag" id="dashTag">DASHBOARDS</div>
@@ -477,7 +475,6 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
       <span id="syncStatus">🔄 Loading...</span>
     </div></div>
     <div class="sec-inner">
-      <!-- IDEAS PANEL -->
       <div id="iPanel-ideas" class="ipanel">
         <div class="kpi-grid">
           <div class="kpi"><div class="kpi-acc" style="background:var(--p)"></div><div class="kpi-lbl" id="kpiTotalLbl">Total Ideas</div><div class="kpi-val" style="color:var(--p)" id="kpiTotal">—</div></div>
@@ -498,7 +495,6 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         <div id="ideasList"></div>
         <div class="pag" id="ideaPag"></div>
       </div>
-      <!-- ANALYSIS PANEL -->
       <div id="iPanel-analysis" class="ipanel" style="display:none">
         <div class="fbar">
           <div class="ms" id="msAS"><div class="ms-trg" onclick="msToggle('msAS')"><span id="msASLbl">Status</span><span class="ms-arr">▼</span></div><div class="ms-drop" id="msASDrop"></div></div>
@@ -516,7 +512,6 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         <div class="sc"><div class="sc-title" id="aTitle5">👥 Top 5 Customers</div><div id="top5"></div></div>
         <div class="sc"><div class="sc-title" id="aTitleLR">📦 Launch Rate by Module</div><div class="lr-grid" id="lrGrid"></div></div>
       </div>
-      <!-- TRENDS PANEL -->
       <div id="iPanel-trends" class="ipanel" style="display:none">
         <div class="fbar">
           <div class="ms" id="msTS"><div class="ms-trg" onclick="msToggle('msTS')"><span id="msTSLbl">Status</span><span class="ms-arr">▼</span></div><div class="ms-drop" id="msTSDrop"></div></div>
@@ -552,7 +547,11 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         <div class="sc-sub" id="npsDistSub">1,847 survey responses · May 2026</div>
         <div class="nps-gauge-wrap">
           <div class="gauge-area">
-            <div style="position:relative;width:180px;height:95px"><canvas id="cvGauge"></canvas></div>
+            <!-- SVG gauge — deterministic, no canvas sizing issues -->
+            <svg id="npsGaugeSvg" viewBox="0 0 200 120" width="200" height="120" style="display:block">
+              <path d="M 10 108 A 90 90 0 0 1 190 108" fill="none" style="stroke:var(--bgl)" stroke-width="18" stroke-linecap="round"/>
+              <path id="npsGaugeFill" d="M 10 108 A 90 90 0 0 1 190 108" fill="none" stroke="#00A4A6" stroke-width="18" stroke-linecap="round" stroke-dasharray="0 283"/>
+            </svg>
             <div class="gauge-score" style="color:var(--p)">42</div>
             <div class="gauge-lbl" id="gaugeLbl">Net Promoter Score</div>
             <div class="gauge-zone" style="background:var(--pg);color:var(--p)" id="gaugeZone">Good</div>
