@@ -314,6 +314,28 @@ body.dark .cmt-tag{background:rgba(0,164,166,.15)}
 body.dark .rbadge.hi{background:rgba(27,190,110,.15)}
 body.dark .rbadge.md{background:rgba(245,158,11,.15)}
 body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
+
+/* ════ MOTION LAYER (Rewaa) ════ */
+.mnav .nl.act{position:relative}
+.hero::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(560px circle at var(--mx,50%) var(--my,28%),rgba(0,164,166,.20),transparent 68%)}
+@media (prefers-reduced-motion: no-preference){
+  .rw-reveal{opacity:0;transform:translateY(18px)}
+  .rw-reveal.rw-in{animation:rwReveal .6s cubic-bezier(.22,.61,.36,1) forwards}
+  @keyframes rwReveal{to{opacity:1;transform:none}}
+  .rw-word{display:inline-block;opacity:0;transform:translateY(16px);
+    animation:rwWord .55s cubic-bezier(.22,.61,.36,1) forwards}
+  @keyframes rwWord{to{opacity:1;transform:none}}
+  .rw-glow{animation:rwGlow 3.4s ease-in-out infinite}
+  @keyframes rwGlow{0%,100%{box-shadow:0 0 0 0 rgba(0,164,166,0)}
+    50%{box-shadow:0 6px 26px 2px rgba(0,164,166,.5)}}
+  .rw-glow:hover{animation:none;box-shadow:0 6px 30px 4px rgba(0,164,166,.7)}
+  .mnav .nl.act::after{content:'';position:absolute;left:8px;right:8px;bottom:-2px;height:2px;
+    border-radius:2px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#33B6B8,#99DBDB,#33B6B8,transparent);
+    background-size:200% 100%;animation:rwTrail 2.4s linear infinite}
+  @keyframes rwTrail{0%{background-position:0 0}100%{background-position:200% 0}}
+}
 </style>
 </head>
 <body class="light ltr">
@@ -386,11 +408,11 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
         <h1 class="hero-title" id="heroTitle">Insights that <span class="hl">Shape</span><br>Our Product</h1>
         <p class="hero-sub" id="heroSub">One unified portal for customer ideas, NPS scores, and training feedback.</p>
         <div class="hero-acts">
-          <button class="btn-p" id="heroBtn1" onclick="goto('ideas')">Explore Ideas</button>
+          <button class="btn-p rw-glow" id="heroBtn1" onclick="goto('ideas')">Explore Ideas</button>
           <button class="btn-s" id="heroBtn2" onclick="goto('nps')">View NPS Trends</button>
         </div>
         <div class="hero-stats">
-          <div><div class="hstat-v" id="hstat1v">2,400+</div><div class="hstat-l" id="hstat1l">Customer Ideas</div></div>
+          <div><div class="hstat-v" id="hstat1v" data-live>2,400+</div><div class="hstat-l" id="hstat1l">Customer Ideas</div></div>
           <div><div class="hstat-v" id="hstat2v">42</div><div class="hstat-l" id="hstat2l">NPS Score</div></div>
           <div><div class="hstat-v" id="hstat3v">87%</div><div class="hstat-l" id="hstat3l">Training Satisfaction</div></div>
           <div><div class="hstat-v" id="hstat4v">58%</div><div class="hstat-l" id="hstat4l">Ideas Launched</div></div>
@@ -413,7 +435,7 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
           <div class="av-pat"></div>
           <div class="av-title" id="avTitle">Live Dashboard Metrics</div>
           <div class="av-items">
-            <div class="av-item"><div class="av-icon">💡</div><div><div class="av-label" id="av1l">Customer Ideas</div><div class="av-sub" id="av1s">Total submitted via Frill</div></div><div class="av-val" id="av1v">2,400+</div></div>
+            <div class="av-item"><div class="av-icon">💡</div><div><div class="av-label" id="av1l">Customer Ideas</div><div class="av-sub" id="av1s">Total submitted via Frill</div></div><div class="av-val" id="av1v" data-live>2,400+</div></div>
             <div class="av-item"><div class="av-icon">🚀</div><div><div class="av-label" id="av2l">Launched Features</div><div class="av-sub" id="av2s">From customer requests</div></div><div class="av-val" id="av2v">58%</div></div>
             <div class="av-item"><div class="av-icon">⭐</div><div><div class="av-label" id="av3l">NPS Score</div><div class="av-sub" id="av3s">Q2 2026 average</div></div><div class="av-val" id="av3v">42</div></div>
             <div class="av-item"><div class="av-icon">🎓</div><div><div class="av-label" id="av4l">Training Rating</div><div class="av-sub" id="av4s">Average out of 5</div></div><div class="av-val" id="av4v">4.2</div></div>
@@ -477,10 +499,10 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
     <div class="sec-inner">
       <div id="iPanel-ideas" class="ipanel">
         <div class="kpi-grid">
-          <div class="kpi"><div class="kpi-acc" style="background:var(--p)"></div><div class="kpi-lbl" id="kpiTotalLbl">Total Ideas</div><div class="kpi-val" style="color:var(--p)" id="kpiTotal">—</div></div>
-          <div class="kpi"><div class="kpi-acc" style="background:var(--green)"></div><div class="kpi-lbl" id="kpiLaunchedLbl">Launched</div><div class="kpi-val" style="color:var(--green)" id="kpiLaunched">—</div><div class="kpi-sub" id="kpiLaunchSub"></div></div>
-          <div class="kpi"><div class="kpi-acc" style="background:var(--orange)"></div><div class="kpi-lbl" id="kpiVotesLbl">Total Votes</div><div class="kpi-val" style="color:var(--orange)" id="kpiVotes">—</div><div class="kpi-sub" id="kpiAvgSub"></div></div>
-          <div class="kpi"><div class="kpi-acc" style="background:var(--blue)"></div><div class="kpi-lbl" id="kpiPendingLbl">Pending</div><div class="kpi-val" style="color:var(--blue)" id="kpiPending">—</div></div>
+          <div class="kpi"><div class="kpi-acc" style="background:var(--p)"></div><div class="kpi-lbl" id="kpiTotalLbl">Total Ideas</div><div class="kpi-val" style="color:var(--p)" id="kpiTotal" data-live>—</div></div>
+          <div class="kpi"><div class="kpi-acc" style="background:var(--green)"></div><div class="kpi-lbl" id="kpiLaunchedLbl">Launched</div><div class="kpi-val" style="color:var(--green)" id="kpiLaunched" data-live>—</div><div class="kpi-sub" id="kpiLaunchSub"></div></div>
+          <div class="kpi"><div class="kpi-acc" style="background:var(--orange)"></div><div class="kpi-lbl" id="kpiVotesLbl">Total Votes</div><div class="kpi-val" style="color:var(--orange)" id="kpiVotes" data-live>—</div><div class="kpi-sub" id="kpiAvgSub"></div></div>
+          <div class="kpi"><div class="kpi-acc" style="background:var(--blue)"></div><div class="kpi-lbl" id="kpiPendingLbl">Pending</div><div class="kpi-val" style="color:var(--blue)" id="kpiPending" data-live>—</div></div>
         </div>
         <div class="fbar">
           <input type="text" class="finp fsearch" id="iSearch" oninput="ideasPage=1;renderIdeas()">
