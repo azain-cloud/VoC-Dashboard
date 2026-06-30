@@ -260,6 +260,7 @@ function applyTranslations() {
     var el = document.getElementById(k);
     if (el) el.textContent = t[k];
   });
+  animateHeroTitle();
 }
 
 /* ════════════════════════════════════════════════════
@@ -273,6 +274,8 @@ function bootApp() {
   loadTrainingCharts();
   loadIdeas();
   document.addEventListener("click", closeMsOnOutside);
+  initSpotlight();
+  initReveal();
 }
 
 /* ════════════════════════════════════════════════════
@@ -476,20 +479,28 @@ function filteredIdeas(stateSt, stateMo, dateFromId, dateToId, searchId) {
    IDEAS — KPIs
    ════════════════════════════════════════════════════ */
 function updateIdeasKPIs() {
-  var total    = IDEAS_RAW.length;
-  var launched = IDEAS_RAW.filter(function(x) { return x.status === "Launched"; }).length;
-  var votes    = IDEAS_RAW.reduce(function(a,x) { return a + x.votes; }, 0);
-  var pending  = IDEAS_RAW.filter(function(x) { return x.status === "Under Review" || x.status === "Planned"; }).length;
-  document.getElementById("kpiTotal").textContent    = total.toLocaleString();
-  document.getElementById("kpiLaunched").textContent = launched.toLocaleString();
-  document.getElementById("kpiLaunchSub").textContent= Math.round(launched/total*100) + "% launch rate";
-  document.getElementById("kpiVotes").textContent    = votes.toLocaleString();
-  document.getElementById("kpiAvgSub").textContent   = "avg " + Math.round(votes/total) + " per idea";
-  document.getElementById("kpiPending").textContent  = pending.toLocaleString();
+  var total     = IDEAS_RAW.length;
+  var launched  = IDEAS_RAW.filter(function(x) { return x.status === "Launched"; }).length;
+  var votes     = IDEAS_RAW.reduce(function(a,x) { return a + x.votes; }, 0);
+  var pending   = IDEAS_RAW.filter(function(x) { return x.status === "Under Review" || x.status === "Planned"; }).length;
+  var launchPct = total ? Math.round(launched / total * 100) : 0;
+  var avgVotes  = total ? Math.round(votes / total) : 0;
+
+  document.getElementById("kpiTotal").textContent     = total.toLocaleString();
+  document.getElementById("kpiLaunched").textContent  = launched.toLocaleString();
+  document.getElementById("kpiLaunchSub").textContent = launchPct + "% launch rate";
+  document.getElementById("kpiVotes").textContent     = votes.toLocaleString();
+  document.getElementById("kpiAvgSub").textContent    = "avg " + avgVotes + " per idea";
+  document.getElementById("kpiPending").textContent   = pending.toLocaleString();
 
   /* hero stats sync */
   document.getElementById("hstat1v").textContent = total.toLocaleString() + "+";
   document.getElementById("av1v").textContent    = total.toLocaleString() + "+";
+
+  /* animate the data-driven counters */
+  ["kpiTotal","kpiLaunched","kpiVotes","kpiPending","hstat1v","av1v"].forEach(function(id) {
+    countUp(document.getElementById(id));
+  });
 }
 
 /* ════════════════════════════════════════════════════
@@ -902,10 +913,6 @@ function loadNpsCharts() {
 
 function npsFilter(f) {
   npsComFilter = f;
-  ["all","promoter","passive","detractor"].forEach(function(x) {
-    var el = document.getElementById("ncf" + x.charAt(0).toUpperCase() + x.slice(1).replace("romoter","ro").replace("assive","as").replace("etractor","et"));
-    // just re-map manually
-  });
   document.getElementById("ncfAll").classList.toggle("act", f==="all");
   document.getElementById("ncfPro").classList.toggle("act", f==="promoter");
   document.getElementById("ncfPas").classList.toggle("act", f==="passive");
@@ -1101,6 +1108,108 @@ function redrawCharts() {
 
 function escHtml(str) {
   return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ════════════════════════════════════════════════════
+   MOTION — Rewaa-themed animation layer (no dependencies)
+   ════════════════════════════════════════════════════ */
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/* count-up animation for numeric labels — parses the element's existing text */
+function countUp(el) {
+  if (!el || prefersReducedMotion()) return;
+  var raw = (el.textContent || "").trim();
+  var m   = raw.match(/^(\D*)([\d,]*\.?\d+)(\D*)$/);
+  if (!m) return;
+  var prefix   = m[1] || "";
+  var numStr   = m[2];
+  var suffix   = m[3] || "";
+  var decimals = (numStr.split(".")[1] || "").length;
+  var hasComma = numStr.indexOf(",") > -1;
+  var target   = parseFloat(numStr.replace(/,/g, ""));
+  if (isNaN(target)) return;
+  if (el._cuTarget === target) return;   // already showing this value
+  el._cuTarget = target;
+
+  function fmt(v) {
+    var s = v.toFixed(decimals);
+    if (hasComma) {
+      var parts = s.split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      s = parts.join(".");
+    }
+    return prefix + s + suffix;
+  }
+
+  var dur = 900, start = null;
+  function step(ts) {
+    if (start === null) start = ts;
+    var t     = Math.min((ts - start) / dur, 1);
+    var eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(target);
+  }
+  requestAnimationFrame(step);
+}
+
+/* reveal-on-scroll for cards, plus count-up for any numbers inside them */
+function initReveal() {
+  if (!("IntersectionObserver" in window)) return;   // graceful: leave everything visible
+  var targets = document.querySelectorAll(".hero-stats>div,.afeat,.av-item,.dash-card,.doc-card,.kpi,.sc");
+  if (!targets.length) return;
+
+  /* stagger the entrance delay, reset per parent container */
+  var seen = {}, pid = 0;
+  targets.forEach(function(el) {
+    el.classList.add("rw-reveal");
+    var p = el.parentNode;
+    if (p._rwId === undefined) { p._rwId = ++pid; seen[p._rwId] = 0; }
+    el.style.animationDelay = (Math.min(seen[p._rwId]++, 6) * 0.07) + "s";
+  });
+
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("rw-in");
+      countGroup(en.target);
+      io.unobserve(en.target);
+    });
+  }, { threshold: 0.12 });
+
+  targets.forEach(function(el) { io.observe(el); });
+}
+
+/* animate non-live numbers inside a freshly revealed card */
+function countGroup(root) {
+  root.querySelectorAll(".kpi-val,.hstat-v,.av-val").forEach(function(el) {
+    if (el.hasAttribute("data-live")) return;   // data-driven values animate via updateIdeasKPIs
+    countUp(el);
+  });
+}
+
+/* cursor-follow spotlight on the navy hero */
+function initSpotlight() {
+  var hero = document.querySelector(".hero");
+  if (!hero) return;
+  hero.addEventListener("mousemove", function(e) {
+    var r = hero.getBoundingClientRect();
+    hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width  * 100) + "%");
+    hero.style.setProperty("--my", ((e.clientY - r.top)  / r.height * 100) + "%");
+  });
+}
+
+/* staggered word reveal for the hero headline */
+function animateHeroTitle() {
+  var el = document.getElementById("heroTitle");
+  if (!el) return;
+  var text = (el.textContent || "").trim();
+  if (!text) return;
+  el.innerHTML = text.split(/\s+/).map(function(w, i) {
+    return '<span class="rw-word" style="animation-delay:' + (i * 0.08) + 's">' + escHtml(w) + '</span>';
+  }).join(" ");
 }
 
 /* ════════════════════════════════════════════════════
