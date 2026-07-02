@@ -99,6 +99,7 @@ function goto(sec) {
   document.getElementById("sec" + sec.charAt(0).toUpperCase() + sec.slice(1)).classList.add("act");
   document.getElementById("nav" + sec.charAt(0).toUpperCase() + sec.slice(1)).classList.add("act");
   window.scrollTo(0, 0);
+  refreshIndicators();
 }
 
 /* ════════════════════════════════════════════════════
@@ -120,6 +121,7 @@ function setLang(lang) {
   document.getElementById("logoAr").style.display = lang === "ar" ? "" : "none";
   document.getElementById("logoEn").style.display = lang === "en" ? "" : "none";
   applyTranslations();
+  refreshIndicators();
 }
 
 var T = {
@@ -276,6 +278,7 @@ function bootApp() {
   document.addEventListener("click", closeMsOnOutside);
   initSpotlight();
   initReveal();
+  initIndicators();
 }
 
 /* ════════════════════════════════════════════════════
@@ -578,6 +581,7 @@ function ideasTab(name) {
   });
   if (name === "analysis") runAnalysis();
   if (name === "trends")   runTrends();
+  refreshIndicators();
 }
 
 /* ════════════════════════════════════════════════════
@@ -917,6 +921,7 @@ function npsFilter(f) {
   document.getElementById("ncfPro").classList.toggle("act", f==="promoter");
   document.getElementById("ncfPas").classList.toggle("act", f==="passive");
   document.getElementById("ncfDet").classList.toggle("act", f==="detractor");
+  refreshIndicators();
   renderNpsComments();
 }
 
@@ -1065,6 +1070,7 @@ function trFilter(f) {
   document.getElementById("tcf5").classList.toggle("act",   f==="5");
   document.getElementById("tcf4").classList.toggle("act",   f==="4");
   document.getElementById("tcf3").classList.toggle("act",   f==="3");
+  refreshIndicators();
   renderTrComments();
 }
 
@@ -1210,6 +1216,47 @@ function animateHeroTitle() {
   el.innerHTML = text.split(/\s+/).map(function(w, i) {
     return '<span class="rw-word" style="animation-delay:' + (i * 0.08) + 's">' + escHtml(w) + '</span>';
   }).join(" ");
+}
+
+/* ════════════════════════════════════════════════════
+   SLIDING TAB INDICATOR (Motion "animated background")
+   ════════════════════════════════════════════════════ */
+function indicatorGroups() {
+  return document.querySelectorAll(".mnav, .tabs-row, .cf-row");
+}
+
+function initIndicator(group) {
+  if (!group || group._rwInd) return;
+  var ind = document.createElement("span");
+  ind.className = "rw-ind";
+  group.insertBefore(ind, group.firstChild);
+  group._rwInd = ind;
+}
+
+function moveIndicator(group) {
+  if (!group || !group._rwInd) return;
+  var ind    = group._rwInd;
+  var active = group.querySelector(".act");
+  /* hide the pill when the group is off-screen (offset size is 0) */
+  if (!active || (!active.offsetWidth && !active.offsetHeight)) {
+    ind.style.opacity = "0";
+    return;
+  }
+  ind.style.opacity   = "1";
+  ind.style.width     = active.offsetWidth + "px";
+  ind.style.height    = active.offsetHeight + "px";
+  ind.style.transform = "translate(" + active.offsetLeft + "px," + active.offsetTop + "px)";
+}
+
+function refreshIndicators() {
+  indicatorGroups().forEach(moveIndicator);
+}
+
+function initIndicators() {
+  indicatorGroups().forEach(initIndicator);
+  refreshIndicators();
+  window.addEventListener("resize", refreshIndicators);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refreshIndicators);
 }
 
 /* ════════════════════════════════════════════════════
