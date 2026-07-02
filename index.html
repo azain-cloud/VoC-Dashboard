@@ -333,6 +333,9 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
 
 /* ════ SEGMENTED SLIDING TABS ════ */
 .mnav, .tabs-row, .cf-row{position:relative}
+/* hide the nav's scrollbar (still scrolls on small screens) */
+.mnav{scrollbar-width:none;-ms-overflow-style:none}
+.mnav::-webkit-scrollbar{display:none}
 .rw-ind{position:absolute;top:0;left:0;border-radius:6px;background:var(--p);z-index:0;opacity:0;
   pointer-events:none;box-shadow:0 2px 10px rgba(0,164,166,.45);
   transition:transform .34s cubic-bezier(.4,0,.2,1),width .34s cubic-bezier(.4,0,.2,1),
