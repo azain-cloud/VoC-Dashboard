@@ -316,7 +316,6 @@ body.dark .rbadge.md{background:rgba(245,158,11,.15)}
 body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
 
 /* ════ MOTION LAYER (Rewaa) ════ */
-.mnav .nl.act{position:relative}
 .hero::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(560px circle at var(--mx,50%) var(--my,28%),rgba(0,164,166,.20),transparent 68%)}
 @media (prefers-reduced-motion: no-preference){
@@ -330,11 +329,35 @@ body.dark .rbadge.lo{background:rgba(229,72,77,.15)}
   @keyframes rwGlow{0%,100%{box-shadow:0 0 0 0 rgba(0,164,166,0)}
     50%{box-shadow:0 6px 26px 2px rgba(0,164,166,.5)}}
   .rw-glow:hover{animation:none;box-shadow:0 6px 30px 4px rgba(0,164,166,.7)}
-  .mnav .nl.act::after{content:'';position:absolute;left:8px;right:8px;bottom:-2px;height:2px;
-    border-radius:2px;pointer-events:none;
-    background:linear-gradient(90deg,transparent,#33B6B8,#99DBDB,#33B6B8,transparent);
-    background-size:200% 100%;animation:rwTrail 2.4s linear infinite}
-  @keyframes rwTrail{0%{background-position:0 0}100%{background-position:200% 0}}
+}
+
+/* ════ SEGMENTED SLIDING TABS ════ */
+.mnav, .tabs-row, .cf-row{position:relative}
+.rw-ind{position:absolute;top:0;left:0;border-radius:6px;background:var(--p);z-index:0;opacity:0;
+  pointer-events:none;box-shadow:0 2px 10px rgba(0,164,166,.45);
+  transition:transform .34s cubic-bezier(.4,0,.2,1),width .34s cubic-bezier(.4,0,.2,1),
+             height .34s cubic-bezier(.4,0,.2,1),opacity .2s}
+.cf-row .rw-ind{border-radius:999px}
+
+/* top nav tabs */
+.nl{position:relative;z-index:1;border-bottom:none}
+.nl:hover{background:transparent;color:#fff}
+.nl.act{color:#fff;border-bottom-color:transparent;font-weight:700}
+
+/* ideas sub-tabs */
+.tab-btn{position:relative;z-index:1;border-radius:6px;border-bottom:none}
+.tab-btn.act{color:#fff;border-bottom-color:transparent}
+
+/* comment filter chips */
+.cf-btn{position:relative;z-index:1;background:transparent}
+.cf-btn.act{background:transparent;border-color:var(--p);color:#fff}
+
+/* scale / press feedback */
+@media (prefers-reduced-motion: no-preference){
+  .nl,.tab-btn,.cf-btn,.freset,.btn-p,.btn-s,.pb{
+    transition:transform .16s cubic-bezier(.34,1.56,.64,1),background .2s,color .2s,border-color .2s}
+  .nl:hover,.tab-btn:hover,.cf-btn:hover,.freset:hover,.btn-p:hover,.btn-s:hover,.pb:hover{transform:scale(1.05)}
+  .nl:active,.tab-btn:active,.cf-btn:active,.freset:active,.btn-p:active,.btn-s:active,.pb:active{transform:scale(.95)}
 }
 </style>
 </head>
